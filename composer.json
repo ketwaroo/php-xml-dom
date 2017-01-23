@@ -14,8 +14,8 @@
     "require-dev": {
         "ketwaroo/debug-helper": "dev-master"
     },
-    "psr-0": {
-        "Ketwaroo\\Xml": "src/"
+    "psr-4": {
+        "Ketwaroo\\": "src/Ketwaroo/"
     },
     "repositories": [
         {
