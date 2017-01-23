@@ -1,0 +1,29 @@
+{
+    "name": "ketwaroo/php-xml-dom",
+    "type": "package",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Yaasir Ketwaroo",
+            "email": "608793+ketwaroo@users.noreply.github.com"
+        }
+    ],
+    "require": {
+     "ketwaroo/simple-dom": "dev-master"
+    },
+    "require-dev": {
+        "ketwaroo/debug-helper": "dev-master"
+    },
+    "autoload":{
+        "psr-4": {
+            "Ketwaroo\\": "src/Ketwaroo/"
+        }
+    },
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "http://satis.ketwaroo.com"
+        }
+    ]
+
+}
