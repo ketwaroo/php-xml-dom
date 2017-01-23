@@ -9,7 +9,7 @@
         }
     ],
     "require": {
-     "ketwaroo/simple-dom": "1.*",
+     "ketwaroo/simple-dom": "1.*"
     },
     "require-dev": {
         "ketwaroo/debug-helper": "dev-master"
