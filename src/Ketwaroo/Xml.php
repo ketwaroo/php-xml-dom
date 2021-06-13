@@ -156,7 +156,7 @@ class Xml extends \SimpleDOM
      */
     public static function loadXmlFile($filename, $options = 0, $ns = '', $is_prefix = false)
     {
-        return new static(file_get_contents($filename), get_called_class(), $options, $ns, $is_prefix);
+        return new static(file_get_contents($filename), $options, $ns, $is_prefix);
     }
 
     /**
