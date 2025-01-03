@@ -13,95 +13,84 @@ namespace Ketwaroo;
  *
  * @author Yaasir Ketwaroo
  */
-class Xml extends \SimpleDOM
-{
+class Xml extends \SimpleDOM {
 
     /**
      * 
      * @param int $level
      * @return static|boolean
      */
-    public function getParentNode($level = 1)
-    {
+    public function getParentNode(int $level = 1): static|bool {
         $test = $this->xpath(trim(str_repeat('/..', $level), '/'));
 
         return empty($test) ? false : $test[0];
+
     }
 
     /**
      * 
      * @param string $xpath
-     * @param integer $level
-     * @param boolean $flatten
+     * @param int $level
+     * @param bool $flatten
      * @return static[];
      */
-    public function findParentOfX($xpath, $level = 1, $flatten = false)
-    {
+    public function findParentOfX(string $xpath, int $level = 1, bool $flatten = false): array {
         $found = [];
-        foreach (($this->rootPart->xpath($xpath)) as $x)
-        {
-            if (false !== ( $test = $x->getParentNode($level)))
-            {
+        foreach (($this->rootPart->xpath($xpath)) as $x) {
+            if (false !== ( $test = $x->getParentNode($level))) {
                 $found[] = $flatten ? $test->flatten() : $test;
             }
         }
 
         return $found;
+
     }
 
-    public function appendNode(Xml $node, $namespace = null)
-    {
+    public function appendNode(Xml $node, ?string $namespace = null): static {
         /* @var $c Xml */
         $c = $this->addChild($node->getName(), null, $namespace);
-        foreach ($node->getAttributes() as $k => $v)
-        {
+        foreach ($node->getAttributes() as $k => $v) {
             $c->addAttribute($k, $v, $namespace);
         }
 
         $c->insertXML($node->innerXML());
 
-
-
         return $this;
+
     }
 
-    public function setAttribute($name, $value, $namespace = null)
-    {
-        if (isset($this[$name]))
-        {
+    public function setAttribute(string $name, $value, ?string $namespace = null): static {
+        if (isset($this[$name])) {
             $this[$name] = $value;
         }
-        else
-        {
+        else {
             $this->addAttribute($name, $value);
         }
         return $this;
+
     }
 
     /**
      * Get all attributes of current element as associative array.
      * @return array 
      */
-    public function getAttributes(?string $namespaceOrPrefix=null, bool $isPrefix=false)
-    {
+    public function getAttributes(?string $namespaceOrPrefix = null, bool $isPrefix = false): array {
         $tmp = (array) $this->attributes($namespaceOrPrefix, $isPrefix);
-        return empty($tmp['@attributes']) ? array() : $tmp['@attributes'];
+        return empty($tmp['@attributes']) ? [] : $tmp['@attributes'];
+
     }
 
     /**
      * 
-     * @param type $paths
-     * @return type
+     * @param atring|array $paths list of paths
+     * @return array
      */
-    public function matchXPathFirst($paths)
-    {
+    public function matchXPathFirst(string|array $paths): array {
 
-        foreach ((array) $paths as $path)
-        {
+        foreach ((array) $paths as $path) {
             $test = $this->xpath($path);
 
-            if (empty($test))
-            {
+            if (empty($test)) {
                 continue;
             }
 
@@ -109,14 +98,21 @@ class Xml extends \SimpleDOM
         }
 
 
-        return array();
+        return [];
+
     }
 
-    public function matchXPathAll($paths)
-    {
+    /**
+     * must match all supplied xpaths.
+     * 
+     * @param array|string $paths
+     * @return array
+     */
+    public function matchXPathAll(array|string $paths): array {
         $path = '(' . implode(') and (', (array) $paths) . ')';
 
         return $this->xpath($path);
+
     }
 
     /**
@@ -125,13 +121,13 @@ class Xml extends \SimpleDOM
      * 
      * @param string|array $path
      * @param int $numEntries number of entries to pick
-     * @return SimplerDOM|array
+     * @return Xml|array
      */
-    public function matchXPathRandom($path, $numEntries = 1)
-    {
+    public function matchXPathRandom(string $path, int $numEntries = 1): static {
         $nodes = $this->matchXPathAll($path);
 
         return array_rand($nodes, $numEntries);
+
     }
 
     /**
@@ -141,9 +137,9 @@ class Xml extends \SimpleDOM
      * 
      * @return SimplerDOM
      */
-    public function flatten()
-    {
+    public function flatten(): static {
         return new static($this->asXML());
+
     }
 
     /**
@@ -154,9 +150,9 @@ class Xml extends \SimpleDOM
      * @param boolean $is_prefix
      * @return Xml
      */
-    public static function loadXmlFile($filename, $options = 0, $ns = '', $is_prefix = false)
-    {
+    public static function loadXmlFile($filename, $options = 0, $ns = '', $is_prefix = false): static {
         return new static(file_get_contents($filename), $options, $ns, $is_prefix);
+
     }
 
     /**
@@ -166,40 +162,40 @@ class Xml extends \SimpleDOM
      * @param string $namespace
      * @return static
      */
-    public function addChildCdata($name, $value=null, $namespace=null)
-    {
+    public function addChildCdata($name, $value = null, $namespace = null): static {
         /* @var $c Xml */
         $c = $this->addChild($name, NULL, $namespace);
         $c->insertCDATA(strval($value));
         return $c;
+
+    }
+
+    public function asText(): string {
+        return strip_tags($this->asXML());
+
     }
 
     /**
      * Converts to sort of an array representation
      * @return array
      */
-    public function toArray($includeAttributes = true)
-    {
+    public function toArray(bool $includeAttributes = true): array {
         $out     = [];
         if ($includeAttributes
-            && ($attribs = $this->getAttributes())
-            && !empty($attribs))
-        {
+                && ($attribs = $this->getAttributes())
+                && !empty($attribs)) {
 
             $out['@attributes'] = $attribs;
         }
-        if ($this->count())
-        {
-            foreach ($this->children() as $c)
-            {
+        if ($this->count()) {
+            foreach ($this->children() as $c) {
                 $out[$c->getName()][] = $c->toArray();
             }
         }
-        else
-        {
+        else {
             $out[] = strval($this);
         }
         return $out;
-    }
 
+    }
 }
